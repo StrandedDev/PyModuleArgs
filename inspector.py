@@ -2,6 +2,8 @@ import inspect
 import subprocess
 import time
 import os
+import sys
+import io
 
 
 def install_module(module_name):
@@ -80,6 +82,22 @@ def run_all_functions(module):
     list_classes_and_methods(module)
     list_functions_methods_and_arguments(module)
 
+def run_all_with_export(module):
+    try:
+        # Capture the output of run_all_functions
+        output = io.StringIO()
+        sys.stdout = output
+        run_all_functions(module)
+        sys.stdout = sys.__stdout__
+        output_str = output.getvalue()
+        
+        # Write the output to all.txt, overwriting if it exists
+        with open('./all.txt', 'w') as f:
+            f.write(output_str)
+        print("Data exported to all.txt successfully.")
+    except Exception as e:
+        print(f"Error exporting data to all.txt: {e}")
+
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -103,8 +121,9 @@ def main():
         print("4. List Classes and Methods")
         print("5. List Functions, Methods, and Arguments")
         print("6. Run All Functions")
-        print("7. Install another module")
-        print("8. Exit")
+        print("7. Run All Functions With Export")
+        print("8. Install another module")
+        print("9. Exit")
         
         choice = input("Please select an option: ")
         
@@ -121,8 +140,10 @@ def main():
         elif choice == '6':
             run_all_functions(module)
         elif choice == '7':
+            run_all_with_export(module)
+        elif choice == '8':
             install_another_module(module_name)
-        elif choice == '8' or choice == 'exit' or choice == 'Exit':
+        elif choice == '9' or choice == 'exit' or choice == 'Exit':
             print("Exiting...")
             time.sleep(2)
         else:
