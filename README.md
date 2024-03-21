@@ -44,4 +44,4 @@ python inspector.py
 
 ## License
 
-Information about the project's license. Include the type of license and a link to the full license text.
+[MIT](https://opensource.org/license/mit) Copyright &copy; 2024 StrandedCrow
