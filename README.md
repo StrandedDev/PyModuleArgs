@@ -22,13 +22,13 @@ It provides functionalities to install, list classes, functions, and their argum
 To install this tool, simply clone this repository or copy the script into your project directory.
 
 ```
-git clone repo.git
+git clone https://github.com/StrandedDev/PyModuleInspector.git
 ```
 
 Change directory
 
 ```
-cd dir
+cd PyModuleInspector
 ```
 
 ## Usage
