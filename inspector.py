@@ -2,8 +2,8 @@ import inspect
 import subprocess
 import time
 import os
-import sys
 import io
+import sys
 
 
 def install_module(module_name):
@@ -97,6 +97,7 @@ def run_all_with_export(module):
         print("Data exported to all.txt successfully.")
     except Exception as e:
         print(f"Error exporting data to all.txt: {e}")
+
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
