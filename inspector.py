@@ -3,28 +3,28 @@ import subprocess
 import time
 import os
 
+
 def install_module(module_name):
-    """Attempts to install a Python module using pip."""
     try:
         print(f"Status: Module {module_name} is not installed. Installing...")
         subprocess.check_call(['pip', 'install', module_name])
         print(f"Status: Module {module_name} has been installed.")
-    except subprocess.CalledProcessError as e:
+    except Exception as e:
         print(f"Error installing module {module_name}: {e}")
 
-def install_another_module(module_name):
-    """Installs another Python module using pip."""
+def install_another_module():
     clear()
-    try:
-        subprocess.check_call(['pip', 'install', module_name])
-        print(f"Status: Module {module_name} has been installed.")
-    except subprocess.CalledProcessError as e:
-        print(f"Error installing module {module_name}: {e}")
+    module_name = input('Enter the name of the module: ')
+    subprocess.check_call(['pip', 'install', module_name])
+    print(f"Status: Module {module_name} has been installed.")
+
+
 
 def check_and_install_module(module_name):
-    """Checks if a module is installed and installs it if not."""
     try:
+        # Run 'pip list' and get the output
         pip_list_output = subprocess.check_output(['pip', 'list']).decode('utf-8')
+        # Check if the module is in the list
         if module_name not in pip_list_output:
             install_module(module_name)
         else:
@@ -32,32 +32,55 @@ def check_and_install_module(module_name):
     except Exception as e:
         print(f"Error checking or installing module {module_name}: {e}")
 
-def list_members(module, member_type):
-    """Lists classes or functions within a module."""
-    members = inspect.getmembers(module, member_type)
-    print(f"\n\t*****{member_type.__name__.upper()}*****\n")
-    for name, member in members:
-        print(f"{member_type.__name__}: {name}")
 
-def list_members_with_args(module, member_type):
-    """Lists classes or functions within a module along with their arguments."""
-    members = inspect.getmembers(module, member_type)
-    print(f"\n\t*****{member_type.__name__.upper()} and ARGUMENTS*****\n")
-    for name, member in members:
-        sig = inspect.signature(member)
+
+def list_classes(module):
+    classes = inspect.getmembers(module, inspect.isclass)
+    print("\n\t*****CLASSES*****\n")
+    for name, cls in classes:
+        print(f"Class: {name}")
+
+def list_functions(module):
+    functions = inspect.getmembers(module, inspect.isfunction)
+    print("\n\t*****FUNCTIONS*****\n")
+    for name, func in functions:
+        print(f"Function: {name}")
+
+def list_functions_and_arguments(module):
+    functions = inspect.getmembers(module, inspect.isfunction)
+    print("\n\t*****FUNCTIONS and ARGUMENTS*****\n")
+    for name, func in functions:
+        sig = inspect.signature(func)
         args = ', '.join(str(param) for param in sig.parameters.values())
-        print(f"{member_type.__name__}: {name}, Arguments: {args}")
+        print(f"Function: {name}, Arguments: {args}")
+
+def list_classes_and_methods(module):
+    classes = inspect.getmembers(module, inspect.isclass)
+    print("\n\t*****CLASSES and METHODS*****\n")
+    for name, cls in classes:
+        methods = inspect.getmembers(cls, predicate=inspect.isfunction)
+        for method_name, method in methods:
+            print(f"Class: {name}, Method: {method_name}")
+
+def list_functions_methods_and_arguments(module):
+    classes = inspect.getmembers(module, inspect.isclass)
+    print("\n\t*****FUNCTIONS, METHODS and ARGUMENTS*****\n")
+    for name, cls in classes:
+        methods = inspect.getmembers(cls, predicate=inspect.isfunction)
+        for method_name, method in methods:
+            sig = inspect.signature(method)
+            args = ', '.join(str(param) for param in sig.parameters.values())
+            print(f"Class: {name}, Method: {method_name}, Arguments: {args}")
 
 def run_all_functions(module):
-    """Runs all functions within a module."""
     print("\n\t*****RUNNING ALL FUNCTIONS*****\n")
-    list_members(module, inspect.isclass)
-    list_members(module, inspect.isfunction)
-    list_members_with_args(module, inspect.isfunction)
-    list_members_with_args(module, inspect.isclass)
+    list_classes(module)
+    list_functions(module)
+    list_functions_and_arguments(module)
+    list_classes_and_methods(module)
+    list_functions_methods_and_arguments(module)
 
 def clear():
-    """Clears the console."""
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def main():
@@ -66,9 +89,13 @@ def main():
         module = __import__(module_name)
         check_and_install_module(module_name)
         
+        # 3-second delay
         time.sleep(2)
+        
+        # Clear the console
         clear()
         
+        # Show menu one time
         print("\nMenu:")
         print("1. List Classes")
         print("2. List Functions")
@@ -82,19 +109,18 @@ def main():
         choice = input("Please select an option: ")
         
         if choice == '1':
-            list_members(module, inspect.isclass)
+            list_classes(module)
         elif choice == '2':
-            list_members(module, inspect.isfunction)
+            list_functions(module)
         elif choice == '3':
-            list_members_with_args(module, inspect.isfunction)
+            list_functions_and_arguments(module)
         elif choice == '4':
-            list_members_with_args(module, inspect.isclass)
+            list_classes_and_methods(module)
         elif choice == '5':
-            list_members_with_args(module, inspect.isclass)
+            list_functions_methods_and_arguments(module)
         elif choice == '6':
             run_all_functions(module)
         elif choice == '7':
-            module_name = input('Enter the name of the module: ')
             install_another_module(module_name)
         elif choice == '8' or choice == 'exit' or choice == 'Exit':
             print("Exiting...")
